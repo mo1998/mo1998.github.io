@@ -16,29 +16,33 @@
   </style>
 </head>
 <body>
-	<header class="w3-container w3-theme w3-padding" id="myHeader">
-	  <div class="w3-center">
-	  		<h1 class="w3-xxxlarge w3-animate-bottom">GPS Tracking System</h1>
-		    <input type="file" name="file" id="file" style="margin: 32px; padding-left: 120px;">
-		    <div class="w3-padding-32">
-	  			<button class="w3-btn w3-xlarge w3-dark-grey w3-hover-light-grey" onclick="init()" style="font-weight:900;">Show map</button>
-	  		</div>
-	  </div>
-	</header>
+  <header class="w3-container w3-theme w3-padding" id="myHeader">
+    <div class="w3-center">
+        <h1 class="w3-xxxlarge w3-animate-bottom">GPS Tracking System</h1>
+        <input type="file" name="file" id="file" style="margin: 32px; padding-left: 120px;">
+        <div class="w3-padding-32">
+          <button class="w3-btn w3-xlarge w3-dark-grey w3-hover-light-grey" onclick="init()" style="font-weight:900;">Show map</button>
+        </div>
+    </div>
+  </header>
   <div id="map"></div>
   <script>
-  	var n = [];
-  	function numbersOutput(numbers) {
+    var n = [];
+    function ConvertDMSToDD(degrees, minutes, seconds) {
+        var dd = Number(degrees) + Number(minutes)/60 + Number(seconds)/(60*60);
+        return dd;
+  }
+    function numbersOutput(numbers) {
 
-	  var num = numbers.split(' ');
-	  var len = num.length;
-	  for(var i=0;i<len;i++){
-	  	n.push([parseFloat(num[i]),parseFloat(num[i+1])]);
-	  }
-	  console.log(n);
+    var num = numbers.split(' ');
+    var len = num.length;
+    for(var i=0;i<len;i+=3){
+      n.push(parseFloat(ConvertDMSToDD(num[i],num[i+1],num[i+2])));
+    }
+    console.log(n);
 
-	}
-	document.getElementById('file').onchange = function(){
+  }
+  document.getElementById('file').onchange = function(){
 
   var file = this.files[0];
 
@@ -50,18 +54,18 @@
   reader.readAsText(file);
 };
 function init(){
-	initMap();
+  initMap();
 }
     function initMap(){
       // Map options
       var options = {
         zoom:15,
-        center:{lat:n[0][0],lng:n[0][1]}
+        center:{lat:n[0],lng:n[1]}
       }
       var map = new google.maps.Map(document.getElementById('map'), options);
       var markers = [];
-      for(var i = 0;i<n.length;i+=2){
-      	markers.push({lat:n[i][0],lng:n[i][1]});
+      for(var i = 0;i<n.length-1;i+=2){
+        markers.push({lat:n[i],lng:n[i+1]});
       }
       addMarker(markers[0]);
       addMarker(markers[markers.length-1]);
@@ -74,16 +78,14 @@ function init(){
       }
       console.log(markers);
       const path = new google.maps.Polyline({
-      	path: markers,
-      	geodesic: true,
-      	strokeColor: "#FF0000",
-	    strokeOpacity: 1.0,
-	    strokeWeight: 2,
+        path: markers,
+        geodesic: true,
+        strokeColor: "#FF0000",
+      strokeOpacity: 1.0,
+      strokeWeight: 2,
       });
       path.setMap(map);
-
     }
-    
   </script>
   <script async defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBmhcX2uGt-jc5TI_DdS03qbsCEpv5wIM4&callback=initMap">
