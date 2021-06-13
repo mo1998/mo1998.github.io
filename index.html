@@ -23,6 +23,7 @@
         <div class="w3-padding-32">
           <button class="w3-btn w3-xlarge w3-dark-grey w3-hover-light-grey" onclick="init()" style="font-weight:900;">Show map</button>
         </div>
+        <h1 class="w3-xxxlarge w3-animate-bottom" id="dis"></h1>
     </div>
   </header>
   <div id="map"></div>
@@ -90,7 +91,9 @@ function init(){
       for(var i = 0;i<markers.length-1;i++){
         totalDis += cal_Dis(markers[i].lat,markers[i].lng,markers[i+1].lat,markers[i+1].lng);
       }
-      console.log(totalDis*1000);
+      totalDis *= 1000;
+      console.log(totalDis);
+      document.getElementById("dis").innerHTML = "Total Distance : " + totalDis.toFixed(2) + "m";
     }
 
     function cal_Dis(lat1,lon1,lat2,lon2){
