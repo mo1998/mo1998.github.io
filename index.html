@@ -28,16 +28,16 @@
   <div id="map"></div>
   <script>
     var n = [];
-    function ConvertDMSToDD(degrees, minutes, seconds) {
-        var dd = Number(degrees) + Number(minutes)/60 + Number(seconds)/(60*60);
+    function ConvertDMSToDD(degrees, minutes) {
+        var dd = Number(degrees) + Number(minutes)/60;
         return dd;
   }
     function numbersOutput(numbers) {
 
     var num = numbers.split(' ');
     var len = num.length;
-    for(var i=0;i<len;i+=3){
-      n.push(parseFloat(ConvertDMSToDD(num[i],num[i+1],num[i+2])));
+    for(var i=0;i<len;i+=2){
+      n.push(parseFloat(ConvertDMSToDD(num[i],num[i+1])));
     }
     console.log(n);
 
@@ -56,6 +56,7 @@
 function init(){
   initMap();
 }
+
     function initMap(){
       // Map options
       var options = {
@@ -64,6 +65,7 @@ function init(){
       }
       var map = new google.maps.Map(document.getElementById('map'), options);
       var markers = [];
+      var totalDis = 0.0;
       for(var i = 0;i<n.length-1;i+=2){
         markers.push({lat:n[i],lng:n[i+1]});
       }
@@ -85,7 +87,28 @@ function init(){
       strokeWeight: 2,
       });
       path.setMap(map);
+      for(var i = 0;i<markers.length-1;i++){
+        totalDis += cal_Dis(markers[i].lat,markers[i].lng,markers[i+1].lat,markers[i+1].lng);
+      }
+      console.log(totalDis*1000);
     }
+
+    function cal_Dis(lat1,lon1,lat2,lon2){
+      const R = 6371;
+      var q = lat1 * Math.PI/180; 
+    var w = lat2 * Math.PI/180;
+    var x = (lat2-lat1) * Math.PI/180;
+    var y = (lon2-lon1) * Math.PI/180;
+
+    var a = Math.sin(x/2) * Math.sin(x/2) +
+              Math.cos(q) * Math.cos(w) *
+              Math.sin(y/2) * Math.sin(y/2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+    var d = R * c;
+    return d;
+    }
+    
   </script>
   <script async defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBmhcX2uGt-jc5TI_DdS03qbsCEpv5wIM4&callback=initMap">
